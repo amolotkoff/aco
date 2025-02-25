@@ -1,0 +1,2 @@
+# pconf
+simple python configurator
