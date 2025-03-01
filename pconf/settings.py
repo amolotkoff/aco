@@ -20,7 +20,7 @@ class Pconf:
                             default='dev',
                             help='provide dev or prod')
 
-        settings = parser.parse_args()
+        settings, unknown = parser.parse_known_args()
         self.stand = settings.stand
 
         settings_path = Path(settings_path)
