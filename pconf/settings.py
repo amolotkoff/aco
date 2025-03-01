@@ -1,5 +1,9 @@
+from collections.abc import Callable
+from inspect import Signature
 from pathlib import Path
-import argparse, json, __main__
+from typing import Callable
+import argparse, json, __main__, inspect
+
 
 class SettingNotFoundException(Exception):
     pass
@@ -7,6 +11,30 @@ class SettingNotFoundException(Exception):
 class SettingsFileNotExists(Exception):
     pass
 
+
+def configurate(**setting_params):
+    def decorate(func):
+        def wrapped(*args, **kwargs):
+            signature: Signature = inspect.signature(func)
+            args = list(args)
+            args.extend([None] * (len(signature.parameters) - len(args)))
+            pconf = Pconf(func.__code__.co_filename)
+
+            index = 0
+            for signature_param in signature.parameters:
+                if signature_param in setting_params:
+                    setting_param = setting_params[signature_param]
+                    arg = pconf.get(setting_param)
+                    args[index] = arg
+                index += 1
+
+            args = tuple(args)
+
+            return func(*args, **kwargs)
+
+        return wrapped
+
+    return decorate
 
 class Pconf:
     SETTINGS_FILE_NAME : str = 'settings.json'
@@ -35,6 +63,7 @@ class Pconf:
 
         def get_path_as_array(_path : str) -> [str]:
             result_path : [str] = _path.split('/')
+
             return result_path
 
         def get_space(file_path: Path) -> dict:

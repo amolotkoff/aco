@@ -2,7 +2,7 @@
   "dev": {
     "root": {
       "api" : {
-        "api1" : "value1"
+        "api2" : "api2"
       }
     }
   }

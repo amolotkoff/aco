@@ -1,5 +1,9 @@
 {
   "dev": {
-    "api2": "value2"
+    "root": {
+      "api" : {
+        "api1" : "api1"
+      }
+    }
   }
 }
