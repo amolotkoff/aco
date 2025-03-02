@@ -1,7 +1,10 @@
+from argparse import ArgumentParser
 from inspect import Signature
 from pathlib import Path
 import argparse, json, __main__, inspect
 
+SETTINGS_FILE_NAME: str = 'settings.json'
+DEFAULT_STAND: str = 'default'
 
 class SettingNotFoundException(Exception):
     pass
@@ -35,7 +38,6 @@ def binder(**setting_params):
     return decorate
 
 class Pconf:
-    SETTINGS_FILE_NAME : str = 'settings.json'
     settings_path : Path
     stand : str
 
@@ -79,10 +81,10 @@ class Pconf:
             return subspace
 
         def get_settings_from_down_to_up(current_settings_dir_path : Path, path : [str]):
-            current_settings_file_path = current_settings_dir_path.joinpath(self.SETTINGS_FILE_NAME)
+            current_settings_file_path = current_settings_dir_path.joinpath(SETTINGS_FILE_NAME)
             #REDO correct highest directory
             highest_directory_path = Path(__main__.__file__).parent
-        
+
             if current_settings_file_path.is_file():
                 _space = get_space(current_settings_file_path)
                 _setting = get_setting(_space, path)
@@ -104,6 +106,20 @@ class Pconf:
         path.insert(0, self.stand)
 
         settings = get_settings_from_down_to_up(self.settings_path, path)
+
+        #check default settings
+        if settings is None:
+            path[0] = DEFAULT_STAND
+            settings = get_settings_from_down_to_up(self.settings_path, path)
+
+        if settings is None:
+            parser = ArgumentParser()
+            parser.add_argument(setting_path,
+                                type=str,
+                                default=None)
+
+            known, unknown = parser.parse_known_args()
+            settings = known[setting_path]
 
         if settings is None:
             raise SettingNotFoundException(f'setting was not found:{settings}')
