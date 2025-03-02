@@ -1,4 +1,4 @@
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from inspect import Signature
 from pathlib import Path
 import argparse, json, __main__, inspect
@@ -93,8 +93,7 @@ class Pconf:
                     return _setting
 
             #REDO: check outer scope for file
-            if (not current_settings_file_path.is_file() and
-                    current_settings_dir_path == highest_directory_path):
+            if current_settings_dir_path == highest_directory_path:
                 return None
 
             if current_settings_dir_path.parent.is_dir():
@@ -119,7 +118,8 @@ class Pconf:
                                 default=None)
 
             known, unknown = parser.parse_known_args()
-            settings = known[setting_path]
+            settings = vars(known)[setting_path]
+            pass
 
         if settings is None:
             raise SettingNotFoundException(f'setting was not found:{settings}')
