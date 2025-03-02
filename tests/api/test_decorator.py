@@ -1,4 +1,4 @@
-from pconf.settings import binder
+from aco.settings import binder
 import pytest
 
 

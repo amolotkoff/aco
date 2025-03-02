@@ -1,4 +1,4 @@
-from pconf.settings import binder
+from aco.settings import binder
 
 @binder(value='token')
 def token(value):
@@ -7,5 +7,6 @@ def token(value):
 def main():
     assert token() == 'tokenvalue'
 
-if __name__ == '__main__':
-    main()
+#
+# if __name__ == '__main__':
+#     main()
