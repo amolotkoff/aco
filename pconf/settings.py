@@ -1,7 +1,5 @@
-from collections.abc import Callable
 from inspect import Signature
 from pathlib import Path
-from typing import Callable
 import argparse, json, __main__, inspect
 
 
@@ -12,7 +10,7 @@ class SettingsFileNotExists(Exception):
     pass
 
 
-def configurate(**setting_params):
+def binder(**setting_params):
     def decorate(func):
         def wrapped(*args, **kwargs):
             signature: Signature = inspect.signature(func)
@@ -82,8 +80,9 @@ class Pconf:
 
         def get_settings_from_down_to_up(current_settings_dir_path : Path, path : [str]):
             current_settings_file_path = current_settings_dir_path.joinpath(self.SETTINGS_FILE_NAME)
+            #REDO correct highest directory
             highest_directory_path = Path(__main__.__file__).parent
-
+        
             if current_settings_file_path.is_file():
                 _space = get_space(current_settings_file_path)
                 _setting = get_setting(_space, path)
@@ -91,6 +90,7 @@ class Pconf:
                 if _setting:
                     return _setting
 
+            #REDO: check outer scope for file
             if (not current_settings_file_path.is_file() and
                     current_settings_dir_path == highest_directory_path):
                 return None
